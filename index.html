@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vyper7 Web</title>
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin:0; padding:0;
+      font-family: monospace;
+      height:100%;
+      overflow:hidden;
+      color: white;
+      background: #000;
+    }
+    video#bgVideo {
+      position: fixed; top:0; left:0;
+      width:100vw; height:100vh;
+      object-fit: cover; z-index:-1;
+    }
+    #playVideoBtn {
+      position: fixed; bottom:20px; right:20px;
+      z-index:1000;
+      background:rgba(0,0,0,0.7);
+      color:white;
+      padding:10px 20px;
+      border:2px solid white;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:bold;
+    }
+    header {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+      padding:1rem 2rem;
+      position:relative;
+      z-index:10;
+    }
+    .logo { font-family:'UnifrakturCook', cursive; font-size:1.5rem; }
+    nav { display:flex; flex-wrap:wrap; gap:0.5rem; }
+    nav a {
+      color:white; text-decoration:none;
+      padding:4px 8px;
+      border:1px solid white;
+      border-radius:4px;
+      font-weight:bold;
+      white-space:nowrap;
+    }
+    nav a:hover { background:white; color:black; }
+    .login-btn {
+      background:transparent;
+      border:1px solid white;
+      padding:6px 12px;
+      border-radius:8px;
+      color:white;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .login-btn:hover { background:white; color:black; }
+    .main {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      height:calc(100vh - 80px);
+      z-index:5;
+      position:relative;
+      text-align:center;
+      padding:1rem;
+    }
+    .logo-img { width:100%; text-align:center; margin:1rem 0; }
+    .logo-img img {
+      width:180px;
+      max-width:80vw;
+      height:auto;
+      filter:brightness(1.3);
+      transition:transform .3s, filter .3s;
+    }
+    .logo-img img:hover {
+      transform:scale(1.05);
+      filter:brightness(1.5);
+    }
+    .button-container {
+      display:flex; flex-wrap:wrap;
+      justify-content:center;
+      gap:1rem;
+      margin-top:2rem;
+    }
+    .btn {
+      padding:.8rem 1.2rem;
+      background:black;
+      border:2px solid white;
+      color:white;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:bold;
+      min-width:120px;
+    }
+    .btn:hover { background:white; color:black; }
+    #panel, #vipPanel {
+      display:none;
+      padding:2rem 1rem;
+      text-align:center;
+      position:relative;
+      z-index:10;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    #panel img, #vipPanel img {
+      display:block;
+      margin:1rem auto;
+      width:200px;
+      height:auto;
+      max-width:80%;
+    }
+    #panel .btn, #vipPanel .btn { margin:.3rem; }
+    #loginModal, #guildModal, #disclaimerModal, #contactModal {
+      display:none;
+      position:fixed;
+      top:0; left:0;
+      right:0; bottom:0;
+      background:rgba(0,0,0,0.95);
+      z-index:1000;
+      justify-content:center;
+      align-items:center;
+      padding:1rem;
+    }
+    #loginModal div, #guildModal div, #disclaimerModal div, #contactModal div {
+      background:#111;
+      padding:2rem;
+      border-radius:10px;
+      width:100%;
+      max-width:600px;
+      text-align:center;
+    }
+    input {
+      width:100%;
+      padding:.6rem;
+      margin:.5rem 0;
+      border:1px solid white;
+      background:black;
+      color:white;
+      border-radius:6px;
+      font-size:1rem;
+    }
+    #vipPanel {
+      font-family:'UnifrakturCook', cursive;
+      color:#f33;
+      text-shadow:0 0 5px #f33,0 0 10px #a00;
+    }
+    #vipPanel input {
+      border-color:#f33;
+      color:#f33;
+      background:#111;
+    }
+    @media(max-width:768px){
+      header { flex-direction:column; gap:1rem; text-align:center; }
+      nav { justify-content:center; }
+      .main { padding:1rem; }
+      .button-container { gap:.5rem; }
+      .btn { font-size:.9rem; padding:.6rem 1rem; }
+      .logo-img img { width:120px; }
+      #panel img, #vipPanel img { width:120px; }
+    }
+  </style>
+</head>
+<body>
+  <video id="bgVideo" autoplay muted loop>
+    <source src="https://files.catbox.moe/2p4ath.mp4"/>
+    Tu navegador no soporta videos HTML5.
+  </video>
+  <button id="playVideoBtn" onclick="activarVideo()">🔊</button>
+
+  <header>
+    <div class="logo">VYPER7</div>
+    <nav>
+      <a href="#" onclick="irAlInicio()">Home</a>
+      <a href="#" onclick="abrirContacto()">Contact</a>
+      <a href="#" onclick="abrirDisclaimer()">Disclaimer</a>
+    </nav>
+    <button class="login-btn" onclick="abrirLogin()">Login VIP</button>
+  </header>
+
+  <div class="main" id="home">
+    <div class="logo-img">
+      <img src="https://cdn.discordapp.com/attachments/1382915807264112640/1383234733932286083/962ca808dacdc2a70ea6354f7d303ffa.jpg" alt="Vyper7 Demon">
+    </div>
+    <div class="button-container">
+      <button class="btn" onclick="mostrarPanelFree()">Vyper7 Raid</button>
+      <button class="btn" disabled>Próximamente</button>
+      <button class="btn" disabled>Próximamente</button>
+      <button class="btn" disabled>Próximamente</button>
+    </div>
+  </div>
+
+  <div id="panel">
+    <img src="https://cdn.discordapp.com/attachments/1382915807264112640/1383313092850618469/d1e51f535df0f16630aac614c92835f6.jpg" alt="">
+    <button class="btn" onclick="enviarComando('nuke')">Nuke</button>
+    <button class="btn" onclick="enviarComando('spam')">Spam</button>
+    <button class="btn" onclick="enviarComando('create_roles')">Crear Roles</button>
+    <button class="btn" onclick="enviarComando('create_channels')">Crear Canales</button>
+    <button class="btn" onclick="enviarComando('edit_roles')">Editar Roles</button>
+    <button class="btn" onclick="enviarComando('bypass')">Bypass</button>
+    <button class="btn" onclick="enviarComando('bypass_webhooks')">Bypass Webhooks</button>
+    <button class="btn" onclick="enviarComando('spam_webhooks')">Spam2 Webhooks</button>
+    <button class="btn" onclick="enviarComando('edit_channels')">Editar Canales</button>
+    <button class="btn" onclick="enviarComando('dmall')">Dmall</button>
+  </div>
+
+  <div id="vipPanel">
+    <img src="https://cdn.discordapp.com/attachments/1382915807264112640/1383234747400192083/502c835bedd17659f7ed5c6f45ea1eac.jpg" alt="">
+    <button class="btn" onclick="suscribirse()">Suscribirse a VIP</button>
+    <audio id="vipAudio" loop>
+      <source src="https://cdn.pixabay.com/download/audio/2022/03/23/audio_3a1ee1309a.mp3?filename=dark-ambient-12399.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+
+  <!-- Modales -->
+  <div id="loginModal"><div>
+    <h2>🔐 Login</h2>
+    <input id="usernameInput" placeholder="Usuario">
+    <input id="keyInput" type="password" placeholder="Key">
+    <button class="btn" onclick="login()">Entrar</button>
+    <button class="btn" onclick="cerrarLogin()">Cancelar</button>
+  </div></div>
+
+  <div id="guildModal"><div>
+    <h2>🛠️ ID del Servidor</h2>
+    <input id="guildIdInput" placeholder="Ingresa el ID del servidor">
+    <div id="nombreInputContainer" style="display:none;">
+      <input id="nombreInput" placeholder="Nombre del canal">
+    </div>
+    <button class="btn" onclick="enviarComandoModal()">Enviar</button>
+    <button class="btn" onclick="cerrarGuildModal()">Cancelar</button>
+  </div></div>
+
+  <div id="disclaimerModal"><div>
+    <h2>⚠️ Disclaimer / Отказ от ответственности</h2>
+    <p><strong>ES 🇪🇸</strong><br>
+      Este sitio web (Vyper7) ha sido creado con fines educativos y de entretenimiento.<br>
+      Los desarrolladores <strong>no se hacen responsables</strong> por el uso indebido del bot, ni por cualquier daño que pueda causar.<br>
+      Toda responsabilidad de su uso recae en <strong>HyV</strong>.<br>
+      <strong>Nota:</strong> HyV On Top 
+    </p>
+    <p><strong>EN 🇺🇸</strong><br>
+      This site (Vyper7) was made just 4 fun & learning stuff. We ain't responsible 4 what u do w/ the bot, fr.<br>
+      All the heat? That’s on <strong>HyV</strong> <br>
+      <strong>FYI:</strong> HyV on top 
+    </p>
+    <p><strong>RU 🇷🇺</strong><br>
+      Этот сайт (Vyper7) сделан по приколу и для обучения.<br>
+      За косяки с ботом <strong>разрабы не в ответе</strong>, юзай на свой страх и риск.<br>
+      Всё что натворишь — это на <strong>HyV</strong> <br>
+      <strong>P.S.:</strong> HyV топит всегда 
+    </p>
+    <button class="btn" onclick="cerrarDisclaimer()">Cerrar</button>
+  </div></div>
+
+  <div id="contactModal"><div>
+    <h2>📞 Contact / Контакт</h2>
+    <p><strong>ES 🇪🇸</strong><br>
+      ¿Tienes dudas, sugerencias o necesitas soporte?<br>
+      Únete al servidor oficial:</p>
+    <p><strong>EN 🇺🇸</strong><br>
+      Got Qs, wanna vibe or need help?<br>
+      Pull up in the official server </p>
+    <p><strong>RU 🇷🇺</strong><br>
+      Есть вопросы или баги? Залетай в офиц. сервер</p>
+    <a href="https://discord.gg/3GqTF6DbWC" target="_blank" class="btn">Join Server / Войти</a>
+    <br><br>
+    <button class="btn" onclick="cerrarContacto()">Cerrar</button>
+  </div></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io("fi11.bot-hosting.net:21077");
+    let comandoPendiente = null;
+
+    function abrirLogin(){ document.getElementById("loginModal").style.display="flex"; }
+    function cerrarLogin(){ document.getElementById("loginModal").style.display="none"; }
+    function login(){
+      const user= document.getElementById("usernameInput").value.trim();
+      const key = document.getElementById("keyInput").value.trim();
+      if(!user||!key)return alert("🔒 Ingresa usuario y key");
+      socket.emit("login",{user,key});
+    }
+
+    socket.on("login_result",res=>{
+      if(res.success){
+        alert("✅ Acceso VIP concedido");
+        cerrarLogin();
+        document.getElementById("home").style.display="none";
+        document.getElementById("panel").style.display="none";
+        document.getElementById("vipPanel").style.display="block";
+        const audio=document.getElementById("vipAudio");
+        audio.volume=0.4;
+        audio.play().catch(()=>{});
+      } else alert("❌ Usuario o key incorrectos");
+    });
+
+    function mostrarPanelFree(){
+      document.getElementById("home").style.display="none";
+      document.getElementById("panel").style.display="block";
+      document.getElementById("vipPanel").style.display="none";
+    }
+    function irAlInicio(){
+      document.getElementById("home").style.display="flex";
+      document.getElementById("panel").style.display="none";
+      document.getElementById("vipPanel").style.display="none";
+      const audio=document.getElementById("vipAudio");
+      if(!audio.paused){ audio.pause(); audio.currentTime=0; }
+    }
+
+    function suscribirse(){ alert("Funcionalidad VIP próximamente."); }
+    function activarVideo(){
+      const video=document.getElementById("bgVideo");
+      video.muted=false;
+      video.play().then(()=>{document.getElementById("playVideoBtn").style.display="none";})
+      .catch(()=>{alert("No se pudo reproducir el video automáticamente.");});
+    }
+
+    function enviarComando(comando){
+      comandoPendiente = comando;
+      document.getElementById("guildModal").style.display = "flex";
+      document.getElementById("nombreInputContainer").style.display = comando === "create_channels" ? "block" : "none";
+    }
+
+    function enviarComandoModal(){
+      const guildId = document.getElementById("guildIdInput").value.trim();
+      const nombre  = document.getElementById("nombreInput").value.trim();
+      if(!guildId)return alert("⚠️ Ingresa un ID válido");
+      let comandoFinal = comandoPendiente;
+      if(comandoPendiente === "create_channels"){
+        if(!nombre) return alert("⚠️ Ingresa un nombre para el canal");
+        comandoFinal += ` ${nombre}`;
+      }
+      socket.emit("comando", {comando: comandoFinal, guildId});
+      cerrarGuildModal();
+    }
+
+    function cerrarGuildModal(){
+      document.getElementById("guildModal").style.display="none";
+      document.getElementById("guildIdInput").value="";
+      document.getElementById("nombreInput").value="";
+    }
+
+    function abrirDisclaimer(){ document.getElementById("disclaimerModal").style.display="flex"; }
+    function cerrarDisclaimer(){ document.getElementById("disclaimerModal").style.display="none"; }
+    function abrirContacto(){ document.getElementById("contactModal").style.display="flex"; }
+    function cerrarContacto(){ document.getElementById("contactModal").style.display="none"; }
+  </script>
+</body>
+</html>
